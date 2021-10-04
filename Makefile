@@ -30,7 +30,3 @@ clean:
 
 see:
 	echo $(SRCS)
-
-test:
-	gcc $(C_FLAGS) src/main.c src/xaxidma_print.c -o main
-	./main
