@@ -113,3 +113,15 @@ int nocpe_eject(int rx_num_bd, List_t *inj_buff[])
 
     return EXIT_SUCCESS;
 }
+
+void nocpe_empty()
+{
+    sg_start();
+    for (int i = 0; i < 10000; i += 100)
+    {
+        nocpe_inject(i, NULL);
+        sg_sync_tx();
+    }
+
+    sg_stop();
+}

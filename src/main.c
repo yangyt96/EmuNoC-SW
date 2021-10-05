@@ -20,6 +20,7 @@ static struct argp_option options[] = {
     {"random", 'R', 0, 0, "Random mode - Random PEs send to random PEs.", 0},
     {"netrace", 'N', 0, 0, "Netrace mode - Read the *.tra file and inject according to the provided data.", 0},
     {"uniform", 'U', 0, 0, "Uniform mode - Inject the packet according the the injection rate with randomize usage.", 0},
+    {"empty", 'E', 0, 0, "Empty mode - Clear the NoC hardware if there is error occurs.", 0},
 
     // General
     {"max-cyc", 'C', "1000", 0, "Max running cycle.", 1},
@@ -50,8 +51,6 @@ typedef NocPe_Resource_t Arguments_t;
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
-    printf("%i %c %s \n", key, key, arg);
-
     switch (key)
     {
     // mode
@@ -66,6 +65,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         break;
     case 'U':
         NocPe_Resource.mode = "uniform";
+        break;
+    case 'E':
+        NocPe_Resource.mode = "empty";
         break;
 
     // general
@@ -152,7 +154,7 @@ int main(int argc, char *argv[])
     NocPe_Resource.num_interval = 20;
 
     // parse arguments
-    argp_parse(&argp, argc, argv, 0, 0, &NocPe_Resource);
+    argp_parse(&argp, argc, argv, 0, 0, NULL);
     srand(NocPe_Resource.seed);
 
     if (!strcmp(NocPe_Resource.mode, "full"))
@@ -163,6 +165,8 @@ int main(int argc, char *argv[])
         nocpe_netrace_run();
     else if (!strcmp(NocPe_Resource.mode, "uniform"))
         nocpe_uniform_run();
+    else if (!strcmp(NocPe_Resource.mode, "empty"))
+        nocpe_empty();
 
     return EXIT_SUCCESS;
 }
