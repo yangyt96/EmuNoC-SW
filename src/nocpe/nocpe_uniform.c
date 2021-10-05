@@ -5,7 +5,7 @@ void nocpe_uniform_create(uint32_t max_cyc, uint32_t num_interval, float inj_rat
     uint32_t avg_time_frame = max_cyc / num_interval;
     uint32_t rem_time_frame = max_cyc % num_interval;
 
-    uint32_t tot_num_inj = max_cyc * inj_rate;
+    uint32_t tot_num_inj = (uint32_t)((float)max_cyc * inj_rate);
     uint32_t avg_num_inj = tot_num_inj / num_interval;
     uint32_t rem_num_inj = tot_num_inj % num_interval;
 
@@ -57,7 +57,9 @@ void nocpe_uniform_create(uint32_t max_cyc, uint32_t num_interval, float inj_rat
             }
         }
 
-        list_insert_array(nocpe_pkt_cyc_list, -1, pkt_cycs, num_inj);
+        // push back to list from array, checkout list package update (need to do debug -> list_insert_array)
+        for (int k = 0; k < num_inj; k++)
+            list_push_back(nocpe_pkt_cyc_list, &pkt_cycs[k]);
 
         cur_cyc += time_frame;
     }
