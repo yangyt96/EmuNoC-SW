@@ -47,9 +47,10 @@ void nocpe_random_run()
     sg_start();
 
     // random settings
-    // srand(0);
     NocPe_Cyc_t min_time_step = 10;
     NocPe_Cyc_t max_time_step = 30;
+    uint32_t seed = time(0);
+    srand(seed);
 
     // nocpe vars
     NocPe_Cyc_t MAX_CYC = 1000;

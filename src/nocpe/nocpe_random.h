@@ -1,3 +1,4 @@
+#include <time.h>
 #include "nocpe_tools.h"
 #pragma once
 
