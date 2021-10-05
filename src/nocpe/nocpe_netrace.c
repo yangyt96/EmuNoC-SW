@@ -32,10 +32,10 @@ void nocpe_netrace_run()
     sg_start();
 
     // netrace settings
-    char *trace_file = "multiregion.tra";
-    int start_region = 1;
-    int ignore_dependencies = 1; // ? set to 1 first, later if got update then can change value
-    int reader_throttling = 0;   // ? 0
+    char *trace_file = NocPe_Resource.trace_file;
+    int start_region = NocPe_Resource.start_region;
+    int ignore_dependencies = NocPe_Resource.ignore_dependencies; // ? set to 1 first, later if got update then can change value
+    int reader_throttling = NocPe_Resource.reader_throttling;     // ? 0
 
     // netrace vars
     nt_packet_t *netrace_packet = NULL;
@@ -43,7 +43,7 @@ void nocpe_netrace_run()
     nt_context_t *ctx = (nt_context_t *)calloc(1, sizeof(nt_context_t));
 
     // nocpe vars
-    NocPe_Cyc_t MAX_CYC = 1000;
+    NocPe_Cyc_t max_cyc = NocPe_Resource.max_cyc;
     NocPe_Cyc_t cyc = 0;
     uint32_t tot_hw_buffers = 0;
 
@@ -74,10 +74,10 @@ void nocpe_netrace_run()
     if (!ignore_dependencies && reader_throttling)
         nt_init_self_throttling(ctx);
 
-    MAX_CYC += cyc;
+    max_cyc += cyc;
     do
     {
-        if (cyc < MAX_CYC)
+        if (cyc < max_cyc)
             for (netrace_packet = nt_read_packet(ctx); netrace_packet != NULL && cyc == netrace_packet->cycle; netrace_packet = nt_read_packet(ctx))
                 nocpe_netrace_create(*netrace_packet, inj_lists);
 
@@ -88,7 +88,7 @@ void nocpe_netrace_run()
         }
 
         // put to hw_buffers whenever its empty and and hw_list for hw injection
-        if (cyc < MAX_CYC)
+        if (cyc < max_cyc)
             for (int i = 0; i < NOCPE_PE_NUM; i++)
                 while (inj_lists[i]->size > 0)
                 {
@@ -134,14 +134,14 @@ void nocpe_netrace_run()
         for (int i = 0; i < NOCPE_PE_NUM; i++)
             tot_hw_buffers += hw_buffers[i]->size;
 
-        if (cyc < MAX_CYC)
+        if (cyc < max_cyc)
             cyc = netrace_packet->cycle;
         else
             cyc += 100;
 
-        if (cyc > 2 * MAX_CYC)
+        if (cyc > 2 * max_cyc)
             break;
-    } while (cyc < MAX_CYC || tot_hw_buffers > 0);
+    } while (cyc < max_cyc || tot_hw_buffers > 0);
 
     printf("[END] num_lost:%i cyc:%i \n", tot_hw_buffers, cyc);
     for (int i = 0; i < NOCPE_PE_NUM; i++)

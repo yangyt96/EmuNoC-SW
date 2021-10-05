@@ -47,13 +47,11 @@ void nocpe_random_run()
     sg_start();
 
     // random settings
-    NocPe_Cyc_t min_time_step = 10;
-    NocPe_Cyc_t max_time_step = 30;
-    uint32_t seed = time(0);
-    srand(seed);
+    NocPe_Cyc_t min_time_step = NocPe_Resource.min_time_step;
+    NocPe_Cyc_t max_time_step = NocPe_Resource.max_time_step;
 
     // nocpe vars
-    NocPe_Cyc_t MAX_CYC = 1000;
+    NocPe_Cyc_t max_cyc = NocPe_Resource.max_cyc;
     NocPe_Cyc_t cyc = random_int(0, min_time_step);
     uint32_t tot_hw_buffers = 0;
 
@@ -70,11 +68,11 @@ void nocpe_random_run()
     do
     {
         // create random
-        if (cyc < MAX_CYC)
+        if (cyc < max_cyc)
             nocpe_random_create(hw_buffers, inj_lists);
 
         // put to hw_buffers whenever its empty and and hw_list for hw injection
-        if (cyc < MAX_CYC)
+        if (cyc < max_cyc)
             for (int i = 0; i < NOCPE_PE_NUM; i++)
                 while (inj_lists[i]->size > 0)
                 {
@@ -122,9 +120,9 @@ void nocpe_random_run()
 
         cyc += random_int(min_time_step, max_time_step);
 
-        if (cyc > 2 * MAX_CYC)
+        if (cyc > 2 * max_cyc)
             break;
-    } while (cyc < MAX_CYC || tot_hw_buffers > 0);
+    } while (cyc < max_cyc || tot_hw_buffers > 0);
 
     printf("[END] num_lost:%i cyc:%i \n", tot_hw_buffers, cyc);
     for (int i = 0; i < NOCPE_PE_NUM; i++)

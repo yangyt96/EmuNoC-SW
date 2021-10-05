@@ -20,11 +20,11 @@ void nocpe_full_run()
     sg_start();
 
     // full settings
-    NocPe_Cyc_t time_step = 50;
-    uint32_t pkt_len = NOCPE_PKT_MAX_LEN;
+    NocPe_Cyc_t time_step = NocPe_Resource.time_step;
+    uint32_t pkt_len = NocPe_Resource.pkt_len;
 
     // nocpe vars
-    NocPe_Cyc_t MAX_CYC = 1000;
+    NocPe_Cyc_t max_cyc = NocPe_Resource.max_cyc;
     NocPe_Cyc_t cyc = 0;
     uint32_t tot_hw_buffers = 0;
 
@@ -43,7 +43,7 @@ void nocpe_full_run()
     do
     {
         // put to hw_buffers whenever its empty and and hw_list for hw injection
-        if (cyc < MAX_CYC)
+        if (cyc < max_cyc)
             for (int i = 0; i < NOCPE_PE_NUM; i++)
                 while (inj_lists[i]->size > 0)
                 {
@@ -92,9 +92,9 @@ void nocpe_full_run()
 
         cyc += time_step;
 
-        if (cyc > 2 * MAX_CYC)
+        if (cyc > 2 * max_cyc)
             break;
-    } while (cyc < MAX_CYC || tot_hw_buffers > 0);
+    } while (cyc < max_cyc || tot_hw_buffers > 0);
 
     printf("[END] num_lost:%i cyc:%i \n", tot_hw_buffers, cyc);
     for (int i = 0; i < NOCPE_PE_NUM; i++)
