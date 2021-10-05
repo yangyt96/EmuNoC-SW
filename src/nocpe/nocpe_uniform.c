@@ -1,34 +1,5 @@
 #include "nocpe_uniform.h"
 
-void nocpe_uniform_create0(uint32_t max_cyc, float inj_rate, List_t *nocpe_pkt_cyc_list)
-{
-    srand(time(0));
-
-    uint32_t cur_cyc = 0;
-    for (uint32_t num_inj = max_cyc * inj_rate; num_inj > 0; num_inj--)
-    {
-        uint32_t src = random_int(0, NOCPE_PE_NUM - 1);
-        uint32_t dst;
-        do
-            dst = random_int(0, NOCPE_PE_NUM - 1);
-        while (dst == src);
-
-        NocPe_PktCyc_t pkt_cyc;
-        pkt_cyc.pkt = nocpe_create_packet(src, dst, 1);
-
-        uint32_t time_frame = round((float)(max_cyc - cur_cyc) / (float)num_inj);
-        uint32_t lb = cur_cyc;
-        uint32_t ub = cur_cyc + time_frame;
-        pkt_cyc.cyc = random_int(cur_cyc, cur_cyc + time_frame);
-        printf("%i lb:%i ub:%i frame:%i @%i ", num_inj, lb, ub, time_frame, pkt_cyc.cyc);
-        nocpe_print_packet(pkt_cyc.pkt);
-
-        list_push_back(nocpe_pkt_cyc_list, &pkt_cyc);
-
-        cur_cyc = pkt_cyc.cyc;
-    }
-}
-
 void nocpe_uniform_create(uint32_t max_cyc, uint32_t num_interval, float inj_rate, List_t *nocpe_pkt_cyc_list)
 {
     uint32_t avg_time_frame = max_cyc / num_interval;
