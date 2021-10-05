@@ -4,6 +4,7 @@
 #include "nocpe/nocpe_full.h"
 #include "nocpe/nocpe_random.h"
 #include "nocpe/nocpe_netrace.h"
+#include "nocpe/nocpe_uniform.h"
 
 int main(int argc, char *argv[])
 {
