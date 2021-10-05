@@ -81,12 +81,6 @@ void nocpe_netrace_run()
             for (netrace_packet = nt_read_packet(ctx); netrace_packet != NULL && cyc == netrace_packet->cycle; netrace_packet = nt_read_packet(ctx))
                 nocpe_netrace_create(*netrace_packet, inj_lists);
 
-        if (netrace_packet->cycle < cyc)
-        {
-            printf("Error: current simulation cycle %i is smaller than next inject packet cycle %i \n", cyc, netrace_packet->cycle);
-            break;
-        }
-
         // put to hw_buffers whenever its empty and and hw_list for hw injection
         if (cyc < max_cyc)
             for (int i = 0; i < NOCPE_PE_NUM; i++)
