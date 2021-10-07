@@ -51,7 +51,7 @@ static struct argp_option options[] = {
 
     // full
     {"time-step", 't', "50", 0, "Mode Full - time step.", 2},
-    {"pkt-len", 'p', "31", 0, "Mode Full - packet length.", 2},
+    {"pkt-len", 'p', "1", 0, "Mode Full/Uniform - packet length.", 2},
 
     // random
     {"min-time-step", 'l', "10", 0, "Mode Random - minimum time step.", 3},

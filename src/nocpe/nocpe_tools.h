@@ -35,7 +35,7 @@ typedef struct
 
     // full
     uint32_t time_step;
-    uint32_t pkt_len;
+    uint32_t pkt_len; // full/uniform
 
     // random
     uint32_t min_time_step;
