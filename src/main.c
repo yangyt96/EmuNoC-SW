@@ -31,7 +31,7 @@ SOFTWARE.
 #include "nocpe/nocpe_netrace.h"
 #include "nocpe/nocpe_uniform.h"
 
-const char *argp_program_version = "NoC Emultation 1.0";
+const char *argp_program_version = "NoC Emultator 1.0";
 const char *argp_program_bug_address = "<yee.yang.tan@rwth-aachen.de>";
 static char doc[] = "";
 static char args_doc[] = "";
@@ -41,8 +41,8 @@ static struct argp_option options[] = {
     {"full", 'F', 0, 0, "Full mode - All PEs send to all PEs.", 0},
     {"random", 'R', 0, 0, "Random mode - Random PEs send to random PEs.", 0},
     {"netrace", 'N', 0, 0, "Netrace mode - Read the *.tra file and inject according to the provided data.", 0},
-    {"uniform", 'U', 0, 0, "Uniform mode - Inject the packet according the the injection rate with randomize usage.", 0},
-    {"empty", 'E', 0, 0, "Empty mode - Clear the NoC hardware if there is error occurs.", 0},
+    {"uniform", 'U', 0, 0, "Uniform mode - Inject the packet according the the injection rate with uniform randomize usage.", 0},
+    {"empty", 'E', 0, 0, "Empty mode - Reset/Empty the NoC hardware if the error occurs.", 0},
 
     // General
     {"max-cyc", 'C', "1000", 0, "Max running cycle.", 1},
@@ -68,8 +68,6 @@ static struct argp_option options[] = {
     {"inj-rate", 'r', "0.01", 0, "Mode Uniform - the injection rate.", 5},
 
     {0}};
-
-typedef NocPe_Resource_t Arguments_t;
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
@@ -154,11 +152,11 @@ int main(int argc, char *argv[])
     // general
     NocPe_Resource.max_cyc = 1000;
     NocPe_Resource.seed = time(0);
-    NocPe_Resource.outdir = "./";
+    NocPe_Resource.output = "./dummy.csv";
     NocPe_Resource.mode = "full";
 
     // full
-    NocPe_Resource.pkt_len = NOCPE_PKT_MAX_LEN;
+    NocPe_Resource.pkt_len = 1;
     NocPe_Resource.time_step = 50;
 
     // random
