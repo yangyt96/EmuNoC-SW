@@ -30,7 +30,7 @@ typedef struct
     // General
     uint32_t max_cyc;
     uint32_t seed;
-    char *outdir;
+    char *output;
     char *mode;
 
     // full

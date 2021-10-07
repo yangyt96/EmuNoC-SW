@@ -47,7 +47,7 @@ static struct argp_option options[] = {
     // General
     {"max-cyc", 'C', "1000", 0, "Max running cycle.", 1},
     {"seed", 'S', "0", 0, "Seed value for random.", 1},
-    {"outdir", 'O', "./", 0, "Output directory.", 1},
+    {"output", 'O', "./{mode}_{settings}.csv", 0, "Output file path, it will automatically generate according to the mode.", 1},
 
     // full
     {"time-step", 't', "50", 0, "Mode Full - time step.", 2},
@@ -100,7 +100,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         NocPe_Resource.seed = atoi(arg);
         break;
     case 'O':
-        NocPe_Resource.outdir = arg;
+        NocPe_Resource.output = arg;
         break;
 
     // full
