@@ -51,6 +51,9 @@ typedef struct
     uint32_t num_interval;
     float inj_rate;
 
+    // internal
+    FILE *log_file;
+
 } NocPe_Resource_t;
 
 inline NocPe_Resource_t NocPe_Resource;
@@ -58,3 +61,7 @@ inline NocPe_Resource_t NocPe_Resource;
 int nocpe_inject(NocPe_Cyc_t inj_cyc, List_t *inj_list);
 int nocpe_eject(int rx_num_bd, List_t *inj_buff[]);
 void nocpe_empty();
+
+void nocpe_csv_wopen();
+void nocpe_csv_write(NocPe_Cyc_t icyc, NocPe_Cyc_t ecyc, NocPe_Pkt_t pkt);
+void nocpe_csv_wclose();

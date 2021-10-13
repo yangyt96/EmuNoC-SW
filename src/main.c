@@ -177,6 +177,8 @@ int main(int argc, char *argv[])
     argp_parse(&argp, argc, argv, 0, 0, NULL);
     srand(NocPe_Resource.seed);
 
+    nocpe_csv_wopen();
+
     if (!strcmp(NocPe_Resource.mode, "full"))
         nocpe_full_run();
     else if (!strcmp(NocPe_Resource.mode, "random"))
@@ -187,6 +189,8 @@ int main(int argc, char *argv[])
         nocpe_uniform_run();
     else if (!strcmp(NocPe_Resource.mode, "empty"))
         nocpe_empty();
+
+    nocpe_csv_wclose();
 
     return EXIT_SUCCESS;
 }

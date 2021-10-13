@@ -122,6 +122,10 @@ int nocpe_eject(int rx_num_bd, List_t *inj_buff[])
                 // printf("icyc:%i ecyc:%i ", pkt_cyc->cyc, cyc);
                 nocpe_print_packet(*pkt);
 
+                // output to file
+                if (NocPe_Resource.log_file != NULL)
+                    nocpe_csv_write(pkt_cyc->cyc, cyc, *pkt);
+
                 list_erase(inj_buff[pkt->src], pos);
             }
             else
@@ -146,4 +150,49 @@ void nocpe_empty()
     }
 
     sg_stop();
+}
+
+void nocpe_csv_wopen()
+{
+    char fname[100] = {};
+    if (NocPe_Resource.output != NULL)
+    {
+        strcpy(fname, NocPe_Resource.output);
+    }
+    else
+    {
+        if (!strcmp(NocPe_Resource.mode, "full"))
+            sprintf(fname, "%s_cyc-%u_time-step-%u_pkt-len-%u.csv",
+                    NocPe_Resource.mode, NocPe_Resource.max_cyc,
+                    NocPe_Resource.time_step, NocPe_Resource.pkt_len);
+        else if (!strcmp(NocPe_Resource.mode, "random"))
+            sprintf(fname, "%s_cyc-%u_seed-%u_min-time-step-%u_max-time-step-%u.csv",
+                    NocPe_Resource.mode, NocPe_Resource.max_cyc, NocPe_Resource.seed,
+                    NocPe_Resource.min_time_step, NocPe_Resource.max_time_step);
+        else if (!strcmp(NocPe_Resource.mode, "netrace"))
+            sprintf(fname, "%s_cyc-%u_%s_start-region-%i.csv",
+                    NocPe_Resource.mode, NocPe_Resource.max_cyc,
+                    NocPe_Resource.trace_file, NocPe_Resource.start_region);
+        else if (!strcmp(NocPe_Resource.mode, "uniform"))
+            sprintf(fname, "%s_cyc-%u_seed-%u_pkt-len-%u_num-interval-%u_inj-rate-%f.csv",
+                    NocPe_Resource.mode, NocPe_Resource.max_cyc, NocPe_Resource.seed,
+                    NocPe_Resource.pkt_len,
+                    NocPe_Resource.num_interval, NocPe_Resource.inj_rate);
+    }
+
+    if (NocPe_Resource.log_file == NULL)
+    {
+        NocPe_Resource.log_file = fopen(fname, "w");
+        fprintf(NocPe_Resource.log_file, "icyc, ecyc, id, src, dst, len \n");
+    }
+}
+
+void nocpe_csv_write(NocPe_Cyc_t icyc, NocPe_Cyc_t ecyc, NocPe_Pkt_t pkt)
+{
+    fprintf(NocPe_Resource.log_file, "%u, %u, %u, %u, %u, %u \n", icyc, ecyc, pkt.id, pkt.src, pkt.dst, pkt.len);
+}
+
+void nocpe_csv_wclose()
+{
+    fclose(NocPe_Resource.log_file);
 }
