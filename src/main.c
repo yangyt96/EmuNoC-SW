@@ -48,6 +48,7 @@ static struct argp_option options[] = {
     {"max-cyc", 'C', "1000", 0, "Max running cycle.", 1},
     {"seed", 'S', "0", 0, "Seed value for random.", 1},
     {"output", 'O', "./{mode}_{settings}.csv", 0, "Output file path, it will automatically generate according to the mode.", 1},
+    {"verbose", 'V', "0", 0, "Print the inject and eject info, 0 for nothing, 1 for csv format, 2 for details.", 1},
 
     // full
     {"time-step", 't', "50", 0, "Mode Full - time step.", 2},
@@ -100,6 +101,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
     case 'O':
         NocPe_Resource.output = arg;
         break;
+    case 'V':
+        NocPe_Resource.verbose = atoi(arg);
+        break;
 
     // full
     case 't':
@@ -149,6 +153,8 @@ static struct argp argp = {options, parse_opt, args_doc, doc, 0, 0, 0};
 
 int main(int argc, char *argv[])
 {
+    memset(&NocPe_Resource, 0, sizeof(NocPe_Resource_t));
+
     // general
     NocPe_Resource.max_cyc = 1000;
     NocPe_Resource.seed = time(0);

@@ -54,8 +54,11 @@ int nocpe_inject(NocPe_Cyc_t inj_cyc, List_t *inj_list)
         {
             *virt_buff = *(uint32_t *)list_front(inj_list);
 
-            printf("[INJECT] @%i ", inj_cyc);
-            nocpe_print_packet(*(NocPe_Pkt_t *)virt_buff);
+            if (NocPe_Resource.verbose == 2)
+            {
+                printf("[INJECT] @%i ", inj_cyc);
+                nocpe_print_packet(*(NocPe_Pkt_t *)virt_buff);
+            }
 
             list_pop_front(inj_list);
             virt_buff++;
@@ -118,9 +121,16 @@ int nocpe_eject(int rx_num_bd, List_t *inj_buff[])
             {
                 NocPe_PktCyc_t *pkt_cyc = (NocPe_PktCyc_t *)list_at(inj_buff[pkt->src], pos);
 
-                printf("[EJECT] @%i ", cyc);
-                // printf("icyc:%i ecyc:%i ", pkt_cyc->cyc, cyc);
-                nocpe_print_packet(*pkt);
+                if (NocPe_Resource.verbose == 1)
+                {
+                    printf("icyc:%i ecyc:%i ", pkt_cyc->cyc, cyc);
+                    nocpe_print_packet(*pkt);
+                }
+                else if (NocPe_Resource.verbose == 2)
+                {
+                    printf("[EJECT] @%i ", cyc);
+                    nocpe_print_packet(*pkt);
+                }
 
                 // output to file
                 if (NocPe_Resource.log_file != NULL)
