@@ -13,6 +13,7 @@ INCS=$(foreach d, $(INC_DIRS), -I$d)
 
 # compiler
 # CROSS_COMPILE:=arm-linux-gnueabihf-
+# CROSS_COMPILE:=aarch64-linux-gnu-
 CC:=$(CROSS_COMPILE)gcc
 C_FLAGS:=-Wall -std=gnu11 $(INCS)
 C_LINK:=-lm
