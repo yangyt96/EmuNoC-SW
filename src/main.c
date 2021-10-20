@@ -48,6 +48,7 @@ static struct argp_option options[] = {
     {"max-cyc", 'C', "1000", 0, "Max running cycle.", 1},
     {"seed", 'S', "0", 0, "Seed value for random.", 1},
     {"output", 'O', "./{mode}_{settings}.csv", 0, "Output file path, it will automatically generate according to the mode.", 1},
+    {"disable", 'D', 0, 0, "Disable the output file, so that the program won't write the output file.", 1},
     {"verbose", 'V', "0", 0, "Print the inject and eject info, 0 for nothing, 1 for csv format, 2 for details.", 1},
 
     // full
@@ -100,6 +101,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         break;
     case 'O':
         NocPe_Resource.output = arg;
+        break;
+    case 'D':
+        NocPe_Resource.disable = true;
         break;
     case 'V':
         NocPe_Resource.verbose = atoi(arg);
@@ -183,7 +187,8 @@ int main(int argc, char *argv[])
     argp_parse(&argp, argc, argv, 0, 0, NULL);
     srand(NocPe_Resource.seed);
 
-    nocpe_csv_wopen();
+    if (NocPe_Resource.disable != true)
+        nocpe_csv_wopen();
 
     if (!strcmp(NocPe_Resource.mode, "full"))
         nocpe_full_run();
@@ -196,7 +201,8 @@ int main(int argc, char *argv[])
     else if (!strcmp(NocPe_Resource.mode, "empty"))
         nocpe_empty();
 
-    nocpe_csv_wclose();
+    if (NocPe_Resource.disable != true)
+        nocpe_csv_wclose();
 
     return EXIT_SUCCESS;
 }

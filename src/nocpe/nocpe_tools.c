@@ -133,8 +133,9 @@ int nocpe_eject(int rx_num_bd, List_t *inj_buff[])
                 }
 
                 // output to file
-                if (NocPe_Resource.log_file != NULL)
-                    nocpe_csv_write(pkt_cyc->cyc, cyc, *pkt);
+                if (NocPe_Resource.disable != true)
+                    if (NocPe_Resource.log_file != NULL)
+                        nocpe_csv_write(pkt_cyc->cyc, cyc, *pkt);
 
                 list_erase(inj_buff[pkt->src], pos);
             }
