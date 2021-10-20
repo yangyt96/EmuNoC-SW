@@ -162,8 +162,8 @@ int main(int argc, char *argv[])
     // general
     NocPe_Resource.max_cyc = 1000;
     NocPe_Resource.seed = time(0);
-    NocPe_Resource.output = "./dummy.csv";
-    NocPe_Resource.mode = "full";
+    NocPe_Resource.output = NULL;
+    NocPe_Resource.mode = "random";
 
     // full
     NocPe_Resource.pkt_len = 1;
