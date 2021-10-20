@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdbool.h>
+
 #include "nocpe.h"
 #include "cctrlib/list.h"
 #include "xaxidma/xaxidma_sg.h"
