@@ -56,7 +56,7 @@ typedef struct
     // internal
     FILE *log_file;
     int32_t verbose;
-    bool disable;
+    bool disable; // disable the output file
 
 } NocPe_Resource_t;
 
