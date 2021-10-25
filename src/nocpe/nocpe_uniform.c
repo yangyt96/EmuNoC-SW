@@ -179,7 +179,7 @@ void nocpe_uniform_run()
         if (cyc < max_cyc && uniform_pkt_cyc_list->size > 0)
             cyc = ((NocPe_PktCyc_t *)list_front(uniform_pkt_cyc_list))->cyc;
         else
-            cyc += random_int(1, 100);
+            cyc += NocPe_Resource.time_step;
 
         if (cyc > 2 * max_cyc)
             break;
