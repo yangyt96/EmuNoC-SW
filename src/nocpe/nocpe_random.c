@@ -58,7 +58,7 @@ void nocpe_random_create(List_t *hw_buffers[], List_t *inj_lists[])
             dst = random_int(0, NOCPE_PE_NUM - 1);
         while (dst == src);
 
-        NocPe_Pkt_t pkt = nocpe_create_packet(src, dst, len);
+        NocPe_Pkt_t pkt = nocpe_create_packet(NocPe_Resource.id[src]++, src, dst, len);
 
         list_push_back(inj_lists[src], &pkt);
     }

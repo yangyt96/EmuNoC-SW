@@ -31,7 +31,7 @@ void nocpe_full_create(int len, List_t *inj_lists[])
             if (src == dst)
                 continue;
 
-            NocPe_Pkt_t pkt = nocpe_create_packet(src, dst, len);
+            NocPe_Pkt_t pkt = nocpe_create_packet(NocPe_Resource.id[src]++, src, dst, len);
             list_push_back(inj_lists[src], &pkt);
         }
     }

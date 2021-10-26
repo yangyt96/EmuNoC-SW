@@ -22,12 +22,10 @@ SOFTWARE.
 
 #include "nocpe.h"
 
-inline uint32_t nocpe_pkt_id = 0;
-
-NocPe_Pkt_t nocpe_create_packet(uint32_t src, uint32_t dst, uint32_t len)
+NocPe_Pkt_t nocpe_create_packet(uint32_t id, uint32_t src, uint32_t dst, uint32_t len)
 {
     NocPe_Pkt_t ret;
-    ret.id = nocpe_pkt_id++;
+    ret.id = id;
     ret.src = src;
     ret.dst = dst;
     ret.len = len;

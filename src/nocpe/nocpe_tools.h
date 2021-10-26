@@ -54,6 +54,7 @@ typedef struct
     float inj_rate;
 
     // internal
+    NocPe_Cyc_t id[NOCPE_PE_NUM];
     FILE *log_file;
     int32_t verbose;
     bool disable; // disable the output file

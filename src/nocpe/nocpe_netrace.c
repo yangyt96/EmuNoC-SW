@@ -35,9 +35,9 @@ void nocpe_netrace_create(nt_packet_t nt_packet, List_t *wait_lists[])
     {
         NocPe_Pkt_t nocpe_pkt;
         if (size > NOCPE_PKT_MAX_LEN)
-            nocpe_pkt = nocpe_create_packet(src, dst, NOCPE_PKT_MAX_LEN);
+            nocpe_pkt = nocpe_create_packet(NocPe_Resource.id[src]++, src, dst, NOCPE_PKT_MAX_LEN);
         else
-            nocpe_pkt = nocpe_create_packet(src, dst, size);
+            nocpe_pkt = nocpe_create_packet(NocPe_Resource.id[src]++, src, dst, size);
 
         list_push_back(wait_lists[src], &nocpe_pkt);
 

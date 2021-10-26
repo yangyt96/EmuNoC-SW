@@ -58,7 +58,7 @@ void nocpe_uniform_create(uint32_t max_cyc, uint32_t num_interval, float inj_rat
             while (dst == src);
 
             NocPe_PktCyc_t pkt_cyc;
-            pkt_cyc.pkt = nocpe_create_packet(src, dst, NocPe_Resource.pkt_len);
+            pkt_cyc.pkt = nocpe_create_packet(NocPe_Resource.id[src]++, src, dst, NocPe_Resource.pkt_len);
 
             pkt_cyc.cyc = random_int(sub_cur_cyc, max_time_frame);
 
