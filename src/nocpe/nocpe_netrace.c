@@ -63,6 +63,7 @@ void nocpe_netrace_run()
     nt_packet_t *netrace_packet = NULL;
     nt_header_t *header;
     nt_context_t *ctx = (nt_context_t *)calloc(1, sizeof(nt_context_t));
+    NocPe_Cyc_t base_cyc = 0;
 
     // nocpe vars
     NocPe_Cyc_t max_cyc = NocPe_Resource.max_cyc;
@@ -85,22 +86,24 @@ void nocpe_netrace_run()
     if (ignore_dependencies)
         nt_disable_dependencies(ctx);
 
-    // nt_print_trheader(ctx);
+    // print netrace header
+    nt_print_trheader(ctx);
 
     header = nt_get_trheader(ctx);
     nt_seek_region(ctx, &header->regions[start_region]);
 
-    for (int i = 0; i < start_region; i++)
-        cyc += header->regions[i].num_cycles;
+    // for (int i = 0; i < start_region; i++)
+    //     base_cyc += header->regions[i].num_cycles;
 
     if (!ignore_dependencies && reader_throttling)
         nt_init_self_throttling(ctx);
 
-    max_cyc += cyc;
+    netrace_packet = nt_read_packet(ctx);
+    base_cyc = netrace_packet->cycle;
     do
     {
         if (cyc < max_cyc)
-            for (netrace_packet = nt_read_packet(ctx); netrace_packet != NULL && cyc == netrace_packet->cycle; netrace_packet = nt_read_packet(ctx))
+            for (; netrace_packet != NULL && cyc == netrace_packet->cycle - base_cyc; netrace_packet = nt_read_packet(ctx))
                 nocpe_netrace_create(*netrace_packet, inj_lists);
 
         // put to hw_buffers whenever its empty and and hw_list for hw injection
@@ -151,9 +154,9 @@ void nocpe_netrace_run()
             tot_hw_buffers += hw_buffers[i]->size;
 
         if (cyc < max_cyc)
-            cyc = netrace_packet->cycle;
+            cyc = netrace_packet->cycle - base_cyc;
         else
-            cyc += 100;
+            cyc += NocPe_Resource.time_step;
 
         if (cyc > 2 * max_cyc)
             break;
