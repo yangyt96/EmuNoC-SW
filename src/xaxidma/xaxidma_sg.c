@@ -22,6 +22,9 @@ SOFTWARE.
 
 #include "xaxidma_sg.h"
 
+#pragma GCC push_options
+#pragma GCC optimize("O1")
+
 // Hardware ----------------------------------------------------------------------------------
 
 int32_t xaxidma_sg_tran(XAxiDma_Reg_t *self, XAxiDma_BdRing_t *tx_bdring)
@@ -309,3 +312,5 @@ int32_t sg_recv_packets(Sg_Packets_t *packets)
 
     return EXIT_SUCCESS;
 }
+
+#pragma GCC pop_options
