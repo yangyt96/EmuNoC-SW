@@ -154,7 +154,7 @@ int nocpe_eject(int rx_num_bd, List_t *inj_buff[])
 void nocpe_empty()
 {
     sg_start();
-    for (int i = 1000; i < 10000000; i += 1000)
+    for (int i = 0; i < NocPe_Resource.max_cyc; i += NocPe_Resource.time_step)
     {
         if (TxDone == TxBdRing.max_bd_count && TxWrite == TxBdRing.max_bd_count)
             sg_restart_tx();
