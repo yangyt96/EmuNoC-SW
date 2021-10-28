@@ -78,7 +78,7 @@ int nocpe_inject(NocPe_Cyc_t inj_cyc, List_t *inj_list)
     return status;
 }
 
-int nocpe_eject(int rx_num_bd, List_t *inj_buff[])
+int nocpe_eject(int rx_num_bd, List_t *hw_buff[])
 {
     if (rx_num_bd == 0)
     {
@@ -116,10 +116,10 @@ int nocpe_eject(int rx_num_bd, List_t *inj_buff[])
                 continue;
 
             NocPe_Pkt_t *pkt = (NocPe_Pkt_t *)(&rx_buffer[j]);
-            int pos = list_find_data_range(inj_buff[pkt->src], pkt, 0, sizeof(NocPe_Pkt_t));
+            int pos = list_find_data_range(hw_buff[pkt->src], pkt, 0, sizeof(NocPe_Pkt_t) / 2);
             if (pos != -1)
             {
-                NocPe_PktCyc_t *pkt_cyc = (NocPe_PktCyc_t *)list_at(inj_buff[pkt->src], pos);
+                NocPe_PktCyc_t *pkt_cyc = (NocPe_PktCyc_t *)list_at(hw_buff[pkt->src], pos);
 
                 if (NocPe_Resource.verbose == 1)
                 {
@@ -137,7 +137,7 @@ int nocpe_eject(int rx_num_bd, List_t *inj_buff[])
                     if (NocPe_Resource.log_file != NULL)
                         nocpe_csv_write(pkt_cyc->cyc, cyc, *pkt);
 
-                list_erase(inj_buff[pkt->src], pos);
+                list_erase(hw_buff[pkt->src], pos);
             }
             else
             {
