@@ -50,6 +50,8 @@ int nocpe_inject(NocPe_Cyc_t inj_cyc, List_t *inj_list)
     virt_buff++;
 
     if (inj_list != NULL)
+    {
+        NocPe_Resource.hw_buff_count += inj_list->size;
         while (inj_list->size > 0)
         {
             *virt_buff = *(uint32_t *)list_front(inj_list);
@@ -63,6 +65,7 @@ int nocpe_inject(NocPe_Cyc_t inj_cyc, List_t *inj_list)
             list_pop_front(inj_list);
             virt_buff++;
         }
+    }
 
     Sg_Packets_t sg_pkt;
 
@@ -138,6 +141,7 @@ int nocpe_eject(int rx_num_bd, List_t *hw_buff[])
                         nocpe_csv_write(pkt_cyc->cyc, cyc, *pkt);
 
                 list_erase(hw_buff[pkt->src], pos);
+                NocPe_Resource.hw_buff_count--;
             }
             else
             {

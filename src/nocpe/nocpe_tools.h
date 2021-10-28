@@ -54,6 +54,7 @@ typedef struct
     float inj_rate;
 
     // internal
+    uint32_t hw_buff_count;
     NocPe_Cyc_t id[NOCPE_PE_NUM];
     FILE *log_file;
     int32_t verbose;
