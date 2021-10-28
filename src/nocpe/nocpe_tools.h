@@ -70,3 +70,5 @@ void nocpe_empty();
 void nocpe_csv_wopen();
 void nocpe_csv_write(NocPe_Cyc_t icyc, NocPe_Cyc_t ecyc, NocPe_Pkt_t pkt);
 void nocpe_csv_wclose();
+
+int nocpe_cyc_cmp(NocPe_PktCyc_t *a, NocPe_PktCyc_t *b);

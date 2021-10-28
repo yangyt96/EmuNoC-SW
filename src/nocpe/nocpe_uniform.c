@@ -66,18 +66,7 @@ void nocpe_uniform_create(uint32_t max_cyc, uint32_t num_interval, float inj_rat
         }
 
         // sort by time
-        for (int k = 0; k < num_inj; k++)
-        {
-            for (int l = k; l < num_inj; l++)
-            {
-                if (pkt_cycs[l].cyc < pkt_cycs[k].cyc)
-                {
-                    NocPe_PktCyc_t tmp = pkt_cycs[k];
-                    pkt_cycs[k] = pkt_cycs[l];
-                    pkt_cycs[l] = tmp;
-                }
-            }
-        }
+        qsort(pkt_cycs, num_inj, sizeof(NocPe_PktCyc_t), nocpe_cyc_cmp);
 
         // push back to list from array, checkout list package update (need to do debug -> list_insert_array)
         for (int k = 0; k < num_inj; k++)

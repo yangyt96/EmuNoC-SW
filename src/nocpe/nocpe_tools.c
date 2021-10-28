@@ -210,3 +210,13 @@ void nocpe_csv_wclose()
 {
     fclose(NocPe_Resource.log_file);
 }
+
+int nocpe_cyc_cmp(NocPe_PktCyc_t *a, NocPe_PktCyc_t *b)
+{
+    if (a->cyc < b->cyc)
+        return -1; // a < b
+    else if (a->cyc == b->cyc)
+        return 0; // a == n
+    else
+        return 1; // a > b
+}
