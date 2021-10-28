@@ -90,7 +90,6 @@ void nocpe_uniform_run()
     // nocpe vars
     NocPe_Cyc_t max_cyc = NocPe_Resource.max_cyc;
     NocPe_Cyc_t cyc = 0;
-    uint32_t tot_hw_buffers = 0;
 
     List_t *inj_lists[NOCPE_PE_NUM];
     List_t *hw_buffers[NOCPE_PE_NUM];
@@ -160,11 +159,6 @@ void nocpe_uniform_run()
 
         } while (RxDone - RxRead > 0 || RxDone == RxBdRing.max_bd_count || RxRead == RxBdRing.max_bd_count);
 
-        // check whether all pkts are ejected
-        tot_hw_buffers = 0; // ? optimization
-        for (int i = 0; i < NOCPE_PE_NUM; i++)
-            tot_hw_buffers += hw_buffers[i]->size;
-
         if (cyc < max_cyc && uniform_pkt_cyc_list->size > 0)
             cyc = ((NocPe_PktCyc_t *)list_front(uniform_pkt_cyc_list))->cyc;
         else
@@ -172,9 +166,9 @@ void nocpe_uniform_run()
 
         if (cyc > 2 * max_cyc)
             break;
-    } while (cyc < max_cyc || tot_hw_buffers > 0);
+    } while (cyc < max_cyc || NocPe_Resource.hw_buff_count > 0);
 
-    printf("[END] num_lost:%i cyc:%i \n", tot_hw_buffers, cyc);
+    printf("[END] num_lost:%i cyc:%i \n", NocPe_Resource.hw_buff_count, cyc);
     for (int i = 0; i < NOCPE_PE_NUM; i++)
     {
         while (hw_buffers[i]->size > 0)
