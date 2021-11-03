@@ -97,13 +97,18 @@ void nocpe_netrace_run()
     if (!ignore_dependencies && reader_throttling)
         nt_init_self_throttling(ctx);
 
+    nt_free_trheader(header);
+
     netrace_packet = nt_read_packet(ctx);
     base_cyc = netrace_packet->cycle;
     do
     {
         if (cyc < max_cyc)
             for (; netrace_packet != NULL && cyc == netrace_packet->cycle - base_cyc; netrace_packet = nt_read_packet(ctx))
+            {
                 nocpe_netrace_create(*netrace_packet, inj_lists);
+                nt_packet_free(netrace_packet);
+            }
 
         // put to hw_buffers whenever its empty and and hw_list for hw injection
         if (cyc < max_cyc)
