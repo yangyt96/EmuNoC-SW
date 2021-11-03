@@ -66,6 +66,7 @@ inline NocPe_Resource_t NocPe_Resource;
 
 int nocpe_inject(NocPe_Cyc_t inj_cyc, List_t *inj_list);
 int nocpe_eject(int rx_num_bd, List_t *hw_buff[]);
+void nocpe_sync_eject(List_t *hw_buffers[]);
 void nocpe_empty();
 
 void nocpe_csv_wopen();

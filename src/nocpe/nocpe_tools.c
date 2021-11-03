@@ -155,6 +155,69 @@ int nocpe_eject(int rx_num_bd, List_t *hw_buff[])
     return EXIT_SUCCESS;
 }
 
+void nocpe_sync_eject(List_t *hw_buffers[])
+{
+    XAxiDma_DmaSr_Reg_t sr;
+
+    // due to the blocking issue (hardware sp-ps), the stream to dma has not sufficient buffer descriptor, so eject the data first to prevent software deadlock
+    uint32_t time_out = 0;
+    do
+    {
+        if (time_out == 1000000)
+        {
+            // eject from hw
+            do
+            {
+
+                if (RxDone == RxBdRing.max_bd_count && RxRead == RxBdRing.max_bd_count)
+                    sg_restart_rx();
+
+                sg_sync_rx();
+
+                int rx_num_bd = RxDone - RxRead;
+                if (rx_num_bd > 0)
+                    nocpe_eject(rx_num_bd, hw_buffers);
+
+            } while (RxDone - RxRead > 0 || RxDone == RxBdRing.max_bd_count || RxRead == RxBdRing.max_bd_count);
+
+            time_out = 0;
+        }
+
+        sr = virt_dma->mm2s_sr;
+        time_out++;
+    } while (sr.Idle != 1);
+
+    // Check error
+    sr = virt_dma->mm2s_sr;
+    Error += (sr.DMADecErr + sr.DMAIntErr + sr.DMASlvErr);
+    if (Error > 0)
+    {
+        uintptr_t cur_phys_addr = virt_dma->mm2s_curdesc;
+        uint32_t idx = (cur_phys_addr - TX_BD_BASE) / sizeof(XAxiDma_Bd_t);
+        XAxiDma_Bd_t bd = TxBdRing.virt_head[idx];
+        printf("Error: sg_sync_tx \n");
+        xaxidma_print_dma_sr(virt_dma->mm2s_sr);
+        xaxidma_print_bd(bd);
+        return Error;
+    }
+
+    // check the bd is completed
+    while (TxBdRing.virt_head[TxDone].stat.Cmplt != 0 && TxDone < TxBdRing.max_bd_count)
+        TxDone++;
+
+    if (TxDone != TxWrite)
+    {
+        printf("Error: sg_sync_tx - TxDone=%i TxWrite=%i \n", TxDone, TxWrite);
+        uintptr_t cur_phys_addr = virt_dma->mm2s_curdesc;
+        uint32_t idx = (cur_phys_addr - TX_BD_BASE) / sizeof(XAxiDma_Bd_t);
+        XAxiDma_Bd_t bd = TxBdRing.virt_head[idx];
+        printf("cur_phys_addr: 0x%08x \n", virt_dma->mm2s_curdesc);
+        printf("idx: %i \n", idx);
+        xaxidma_print_dma_sr(virt_dma->mm2s_sr);
+        xaxidma_print_bd(bd);
+    }
+}
+
 void nocpe_empty()
 {
     sg_start();
