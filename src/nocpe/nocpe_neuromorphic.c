@@ -28,7 +28,6 @@ uint32_t get_noc_csv_num_row(char *fname)
     // Extract characters from file and store in character c
     for (c = getc(fp); feof(fp) != true; c = getc(fp))
     {
-        printf("%c", c);
         if (c == '\n') // Increment count if this character is newline
             count++;
     }
