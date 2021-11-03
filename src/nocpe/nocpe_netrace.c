@@ -135,7 +135,8 @@ void nocpe_netrace_run()
 
         nocpe_inject(cyc, hw_list); // single injection
 
-        sg_sync_tx(); // after all have been ejected then check the injection is done or not
+        // sg_sync_tx(); // after all have been ejected then check the injection is done or not
+        nocpe_sync_eject(hw_buffers);
 
         // eject from hw
         do
