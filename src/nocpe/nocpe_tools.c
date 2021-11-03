@@ -235,7 +235,7 @@ void nocpe_empty()
 
 void nocpe_csv_wopen()
 {
-    char fname[100] = {};
+    char fname[200] = {};
     if (NocPe_Resource.output != NULL)
     {
         strcpy(fname, NocPe_Resource.output);
@@ -259,6 +259,10 @@ void nocpe_csv_wopen()
                     NocPe_Resource.mode, NocPe_Resource.max_cyc, NocPe_Resource.seed,
                     NocPe_Resource.pkt_len,
                     NocPe_Resource.num_interval, NocPe_Resource.inj_rate);
+        else if (!strcmp(NocPe_Resource.mode, "neuro"))
+            sprintf(fname, "%s_cyc-%u_seed-%u_pkt-len-%u_sparsity-%.2f_%s",
+                    NocPe_Resource.mode, NocPe_Resource.max_cyc, NocPe_Resource.seed,
+                    NocPe_Resource.pkt_len, NocPe_Resource.sparsity, basename(NocPe_Resource.neuro_file));
     }
 
     if (NocPe_Resource.log_file == NULL)

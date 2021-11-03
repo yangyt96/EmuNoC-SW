@@ -30,6 +30,7 @@ SOFTWARE.
 #include "nocpe/nocpe_random.h"
 #include "nocpe/nocpe_netrace.h"
 #include "nocpe/nocpe_uniform.h"
+#include "nocpe/nocpe_neuromorphic.h"
 
 const char *argp_program_version = "NoC Emultator 1.0";
 const char *argp_program_bug_address = "<yee.yang.tan@rwth-aachen.de>";
@@ -42,6 +43,7 @@ static struct argp_option options[] = {
     {"random", 'R', 0, 0, "Random mode - Random PEs send to random PEs.", 0},
     {"netrace", 'N', 0, 0, "Netrace mode - Read the *.tra file and inject according to the provided data.", 0},
     {"uniform", 'U', 0, 0, "Uniform mode - Inject the packet according the the injection rate with uniform randomize usage.", 0},
+    {"neuro", 'M', 0, 0, "Neuromorphic mode - Read the provided NoC csv weight file and do uniform random injection according to the weight.", 0},
     {"empty", 'E', 0, 0, "Empty mode - Reset/Empty the NoC hardware if the error occurs.", 0},
 
     // General
@@ -69,6 +71,10 @@ static struct argp_option options[] = {
     {"num-interval", 'n', "100", 0, "Mode Uniform - to separate the max cycle into multiple region for better injection distribution.", 5},
     {"inj-rate", 'r', "0.01", 0, "Mode Uniform - the injection rate.", 5},
 
+    // neuro
+    {"neuro-file", 'm', "*.csv", 0, "Mode Neuromorphic - the path of the NoC Neuromorphic weight file.", 6},
+    {"sparsity", 'a', "0.5", 0, "Mode Neuromorphic - make the weight decrease by the sparsity (weight * (1-sparsity)).", 6},
+
     {0}};
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
@@ -87,6 +93,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         break;
     case 'U':
         NocPe_Resource.mode = "uniform";
+        break;
+    case 'M':
+        NocPe_Resource.mode = "neuro";
         break;
     case 'E':
         NocPe_Resource.mode = "empty";
@@ -147,6 +156,14 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         NocPe_Resource.inj_rate = atof(arg);
         break;
 
+    // neuro
+    case 'm':
+        NocPe_Resource.neuro_file = arg;
+        break;
+    case 'a':
+        NocPe_Resource.sparsity = atof(arg);
+        break;
+
     default:
         return ARGP_ERR_UNKNOWN;
     }
@@ -183,6 +200,10 @@ int main(int argc, char *argv[])
     NocPe_Resource.inj_rate = 0.1;
     NocPe_Resource.num_interval = 20;
 
+    // neuro
+    NocPe_Resource.neuro_file = "";
+    NocPe_Resource.sparsity = 0.5;
+
     // parse arguments
     argp_parse(&argp, argc, argv, 0, 0, NULL);
     srand(NocPe_Resource.seed);
@@ -198,6 +219,8 @@ int main(int argc, char *argv[])
         nocpe_netrace_run();
     else if (!strcmp(NocPe_Resource.mode, "uniform"))
         nocpe_uniform_run();
+    else if (!strcmp(NocPe_Resource.mode, "neuro"))
+        nocpe_neuromorphic_run();
     else if (!strcmp(NocPe_Resource.mode, "empty"))
         nocpe_empty();
 

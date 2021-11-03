@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <stdbool.h>
+#include <libgen.h>
 
 #include "nocpe.h"
 #include "cctrlib/list.h"
@@ -37,7 +38,7 @@ typedef struct
 
     // full
     uint32_t time_step;
-    uint32_t pkt_len; // full/uniform
+    uint32_t pkt_len; // full/uniform/neuro
 
     // random
     uint32_t min_time_step;
@@ -52,6 +53,10 @@ typedef struct
     // uniform
     uint32_t num_interval;
     float inj_rate;
+
+    // neuromorphic
+    char *neuro_file;
+    double sparsity;
 
     // internal
     uint32_t hw_buff_count;
