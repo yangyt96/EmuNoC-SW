@@ -63,9 +63,6 @@ typedef struct
     NocPe_Cyc_t cyc;
 } NocPe_PktCyc_t;
 
-// Global variable
-inline uint32_t nocpe_pkt_id;
-
 // Functions
-NocPe_Pkt_t nocpe_create_packet(uint32_t src, uint32_t dst, uint32_t len);
+NocPe_Pkt_t nocpe_create_packet(uint32_t id, uint32_t src, uint32_t dst, uint32_t len);
 void nocpe_print_packet(NocPe_Pkt_t pkt);
