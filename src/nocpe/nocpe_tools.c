@@ -155,6 +155,9 @@ int nocpe_eject(int rx_num_bd, List_t *hw_buff[])
     return EXIT_SUCCESS;
 }
 
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+
 void nocpe_sync_eject(List_t *hw_buffers[])
 {
     XAxiDma_DmaSr_Reg_t sr;
@@ -217,6 +220,7 @@ void nocpe_sync_eject(List_t *hw_buffers[])
         xaxidma_print_bd(bd);
     }
 }
+#pragma GCC pop_options
 
 void nocpe_empty()
 {
