@@ -76,6 +76,84 @@ void nocpe_uniform_create(uint32_t max_cyc, uint32_t num_interval, float inj_rat
     }
 }
 
+void nocpe_uniform_create_opt(uint32_t upper_bound, uint32_t lower_bound, float inj_rate, List_t *uniform_pkt_cyc_list)
+{
+
+    uint32_t irate_int = (uint32_t)inj_rate;
+    float irate_dec = inj_rate - (uint32_t)inj_rate;
+
+    uint32_t num_cyc = upper_bound - lower_bound;
+    uint32_t num_inj = (uint32_t)((float)num_cyc * irate_dec);
+    uint32_t prev_cyc = lower_bound;
+    uint32_t num_cyc_int = lower_bound;
+
+    uint32_t time_frame = num_cyc;
+    if (num_inj != 0)
+        time_frame = num_cyc / num_inj;
+
+    for (uint32_t i = 0; i < num_inj; i++)
+    {
+        NocPe_PktCyc_t pkt_cyc;
+        uint32_t src = random_int(0, NOCPE_PE_NUM - 1);
+        uint32_t dst;
+        do
+            dst = random_int(0, NOCPE_PE_NUM - 1);
+        while (dst == src);
+        pkt_cyc.pkt = nocpe_create_packet(NocPe_Resource.id[src]++, src, dst, NocPe_Resource.pkt_len);
+
+        pkt_cyc.cyc = random_int(prev_cyc, (i + 1) * time_frame);
+
+        prev_cyc = pkt_cyc.cyc;
+
+        if (pkt_cyc.cyc >= upper_bound)
+            break;
+
+        if (irate_int > 0)
+        {
+            for (; num_cyc_int <= pkt_cyc.cyc; num_cyc_int++)
+                for (uint32_t j = 0; j < irate_int; j++)
+                {
+                    NocPe_PktCyc_t extend_pkt_cyc;
+                    src = random_int(0, NOCPE_PE_NUM - 1);
+                    do
+                        dst = random_int(0, NOCPE_PE_NUM - 1);
+                    while (dst == src);
+                    extend_pkt_cyc.pkt = nocpe_create_packet(NocPe_Resource.id[src]++, src, dst, NocPe_Resource.pkt_len);
+                    extend_pkt_cyc.cyc = num_cyc_int;
+                    list_push_back(uniform_pkt_cyc_list, &extend_pkt_cyc);
+
+                    // printf("extend %i cyc: %i ", j, extend_pkt_cyc.cyc);
+                    // nocpe_print_packet(extend_pkt_cyc.pkt);
+                }
+        }
+
+        list_push_back(uniform_pkt_cyc_list, &pkt_cyc);
+
+        // printf("original %i cyc: %i ", i, pkt_cyc.cyc);
+        // nocpe_print_packet(pkt_cyc.pkt);
+    }
+
+    for (uint32_t cyc = prev_cyc + 1; cyc <= upper_bound; cyc++)
+    {
+        for (uint32_t i = 0; i < irate_int; i++)
+        {
+            NocPe_PktCyc_t extend_pkt_cyc;
+            uint32_t src = random_int(0, NOCPE_PE_NUM - 1);
+            uint32_t dst;
+            do
+                dst = random_int(0, NOCPE_PE_NUM - 1);
+            while (dst == src);
+            extend_pkt_cyc.pkt = nocpe_create_packet(NocPe_Resource.id[src]++, src, dst, NocPe_Resource.pkt_len);
+            extend_pkt_cyc.cyc = cyc;
+
+            list_push_back(uniform_pkt_cyc_list, &extend_pkt_cyc);
+
+            // printf("extend %i cyc: %i ", i, extend_pkt_cyc.cyc);
+            // nocpe_print_packet(extend_pkt_cyc.pkt);
+        }
+    }
+}
+
 void nocpe_uniform_run()
 {
     sg_start();
@@ -101,7 +179,8 @@ void nocpe_uniform_run()
         inj_lists[i] = list_init(sizeof(NocPe_Pkt_t));
     }
 
-    nocpe_uniform_create(max_cyc, num_interval, inj_rate, uniform_pkt_cyc_list);
+    // nocpe_uniform_create(max_cyc, num_interval, inj_rate, uniform_pkt_cyc_list);
+    nocpe_uniform_create_opt(max_cyc, 0, NocPe_Resource.inj_rate, uniform_pkt_cyc_list);
 
     do
     {
