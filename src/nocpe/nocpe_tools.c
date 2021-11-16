@@ -272,13 +272,13 @@ void nocpe_csv_wopen()
     if (NocPe_Resource.log_file == NULL)
     {
         NocPe_Resource.log_file = fopen(fname, "w");
-        fprintf(NocPe_Resource.log_file, "icyc, ecyc, id, src, dst, len \n");
+        fprintf(NocPe_Resource.log_file, "icyc,ecyc,id,src,dst,len\n");
     }
 }
 
 void nocpe_csv_write(NocPe_Cyc_t icyc, NocPe_Cyc_t ecyc, NocPe_Pkt_t pkt)
 {
-    fprintf(NocPe_Resource.log_file, "%u, %u, %u, %u, %u, %u \n", icyc, ecyc, pkt.id, pkt.src, pkt.dst, pkt.len);
+    fprintf(NocPe_Resource.log_file, "%u,%u,%u,%u,%u,%u\n", icyc, ecyc, pkt.id, pkt.src, pkt.dst, pkt.len);
 }
 
 void nocpe_csv_wclose()
