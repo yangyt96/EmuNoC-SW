@@ -96,11 +96,11 @@ uint32_t calculate_all_num_pkt(uint32_t max_cyc, struct Table table[], uint32_t 
     return tot;
 }
 
-void nocpe_neuromorphic_create(uint32_t max_cyc, struct Table table[], uint32_t num_row, NocPe_PktCyc_t *pkt_cycs)
+uint32_t nocpe_neuromorphic_create(uint32_t max_cyc, struct Table table[], uint32_t num_row, NocPe_PktCyc_t *pkt_cycs)
 {
     uint32_t tot_num_inj[num_row];
     for (uint32_t i = 0; i < num_row; i++)
-        tot_num_inj[i] = max_cyc * table[i].rate;
+        tot_num_inj[i] = (uint32_t)((double)max_cyc * table[i].rate);
 
     uint32_t cnt = 0;
     for (uint32_t i = 0; i < num_row; i++)
@@ -117,6 +117,8 @@ void nocpe_neuromorphic_create(uint32_t max_cyc, struct Table table[], uint32_t 
     }
 
     qsort(pkt_cycs, cnt, sizeof(NocPe_PktCyc_t), nocpe_cyc_cmp);
+
+    return cnt;
 }
 
 void nocpe_neuromorphic_run()
@@ -145,29 +147,38 @@ void nocpe_neuromorphic_run()
 
     uint32_t num_row = get_noc_csv_data(fname, table);
 
-    for (uint32_t i = 0; i < num_row; i++)
-        printf("%i src:%i dst:%i rate:%e \n", i, table[i].src, table[i].dst, table[i].rate);
+    // for (uint32_t i = 0; i < num_row; i++)
+    //     printf("%i src:%i dst:%i rate:%e \n", i, table[i].src, table[i].dst, table[i].rate);
 
     uint32_t num_pkt = calculate_all_num_pkt(max_cyc, table, num_row);
+
+    printf("need to create: %u \n", num_pkt);
+
     NocPe_PktCyc_t *pkt_cycs = malloc(sizeof(NocPe_PktCyc_t) * num_pkt);
-    nocpe_neuromorphic_create(max_cyc, table, num_row, pkt_cycs);
+    num_pkt = nocpe_neuromorphic_create(max_cyc, table, num_row, pkt_cycs);
+
+    printf("has created: %u \n", num_pkt);
+
+    FILE *file = fopen("tmp.bin", "wb");
+    fwrite(pkt_cycs, sizeof(NocPe_PktCyc_t), num_pkt, file);
+    fclose(file);
+    free(pkt_cycs);
 
     printf("Done create data: %i \n", num_pkt);
 
-    uint64_t pkt_cyc_ptr = 0;
+    file = fopen("tmp.bin", "rb");
+    NocPe_PktCyc_t pkt_cyc;
+    fread(&pkt_cyc, sizeof(NocPe_PktCyc_t), 1, file);
 
     do
     {
         if (cyc < max_cyc)
-            while (pkt_cyc_ptr < num_pkt)
+            for (; cyc == pkt_cyc.cyc && feof(file) != true;)
             {
-                NocPe_PktCyc_t *pkt_cyc = &pkt_cycs[pkt_cyc_ptr];
-                if (pkt_cyc->cyc != cyc)
-                    break;
+                list_push_back(inj_lists[pkt_cyc.pkt.src], &(pkt_cyc.pkt));
 
-                list_push_back(inj_lists[pkt_cyc->pkt.src], &(pkt_cyc->pkt));
-
-                pkt_cyc_ptr++;
+                if (feof(file) != true)
+                    fread(&pkt_cyc, sizeof(NocPe_PktCyc_t), 1, file);
             }
 
         // put to hw_buffers whenever its empty and and hw_list for hw injection
@@ -213,8 +224,8 @@ void nocpe_neuromorphic_run()
 
         } while (RxDone - RxRead > 0 || RxDone == RxBdRing.max_bd_count || RxRead == RxBdRing.max_bd_count);
 
-        if (cyc < max_cyc && pkt_cyc_ptr < num_pkt)
-            cyc = pkt_cycs[pkt_cyc_ptr].cyc;
+        if (cyc < max_cyc && feof(file) != true)
+            cyc = pkt_cyc.cyc;
         else
             cyc += NocPe_Resource.time_step;
 
@@ -243,7 +254,9 @@ void nocpe_neuromorphic_run()
         list_destroy(inj_lists[i]);
         list_destroy(hw_buffers[i]);
     }
-    free(pkt_cycs);
+
+    fclose(file);
+    remove("tmp.bin");
 
     sg_stop();
 }
