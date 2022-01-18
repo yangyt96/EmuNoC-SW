@@ -28,13 +28,13 @@ SOFTWARE.
 #pragma once
 
 // Hardware settings
-#define NOCPE_PE_NUM (4) // MAX_DIM_X * MAX_DIM_Y * MAX_DIM_Z
-#define NOCPE_INJ_BUFF_DEPTH (4)
+#define NOCPE_PE_NUM (64) // MAX_DIM_X * MAX_DIM_Y * MAX_DIM_Z
+#define NOCPE_INJ_BUFF_DEPTH (16)
 
 // Bit Width
 #define NOCPE_PKT_SIZE (sizeof(uint32_t) * 8) // 32-bit
 #define NOCPE_PKT_LEN_WIDTH (5)               // 5-bit
-#define NOCPE_PKT_ADDR_WIDTH (2)              // (uint32_t)(floor(log2(NOCPE_PE_NUM - 1)) + 1)
+#define NOCPE_PKT_ADDR_WIDTH (6)              // (uint32_t)(floor(log2(NOCPE_PE_NUM - 1)) + 1)
 #define NOCPE_PKT_ID_WIDTH (NOCPE_PKT_SIZE - NOCPE_PKT_LEN_WIDTH - 2 * NOCPE_PKT_ADDR_WIDTH)
 
 // Constants
