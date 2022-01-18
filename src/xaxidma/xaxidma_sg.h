@@ -31,14 +31,14 @@ SOFTWARE.
 #include "xaxidma_print.h"
 #pragma once
 
-#define DMA_BASE_ADDR (0x40400000)
+#define DMA_BASE_ADDR (0xa0000000)
 #define DDR_BASE_ADDR (0x00000000)
 #define MEM_BASE_ADDR (DDR_BASE_ADDR + 0x01000000)
 
 #define TX_BD_BASE (MEM_BASE_ADDR + 0x00000000)
-#define TX_BD_HIGH (MEM_BASE_ADDR + 0x0000FFFF)
-#define RX_BD_BASE (MEM_BASE_ADDR + 0x00010000)
-#define RX_BD_HIGH (MEM_BASE_ADDR + 0x0001FFFF)
+#define TX_BD_HIGH (MEM_BASE_ADDR + 0x0003FFFF)
+#define RX_BD_BASE (MEM_BASE_ADDR + 0x00040000)
+#define RX_BD_HIGH (MEM_BASE_ADDR + 0x0007FFFF)
 
 #define TX_BUFF_BASE (MEM_BASE_ADDR + 0x00100000)
 #define TX_BUFF_HIGH (MEM_BASE_ADDR + 0x002fffff)
@@ -46,7 +46,7 @@ SOFTWARE.
 #define RX_BUFF_HIGH (MEM_BASE_ADDR + 0x004fffff)
 
 #define MIN_BD_PKT_BYTE (sizeof(uint32_t))
-#define MAX_BD_PKT_BYTE (MIN_BD_PKT_BYTE * 66) // (MIN_BD_PKT_BYTE * (NOCPE_PE_NUM + 1))
+#define MAX_BD_PKT_BYTE (MIN_BD_PKT_BYTE * 66) // (MIN_BD_PKT_BYTE * (NOCPE_PE_NUM + 2)), time and zeros
 
 typedef struct
 {
