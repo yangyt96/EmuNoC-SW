@@ -378,6 +378,7 @@ void nt_read_ahead(nt_context_t *ctx, unsigned long long int current_cycle)
 				//} else {
 				// Ignore this packet, since the reader is already tracking it
 			}
+			nt_packet_free(packet);
 		}
 	}
 }
@@ -564,6 +565,7 @@ void nt_prime_self_throttle(nt_context_t *ctx)
 	}
 	ctx->primed_self_throttle = 1;
 	nt_read_ahead(ctx, packet->cycle);
+	nt_packet_free(packet);
 }
 
 void nt_add_cleared_packet_to_list(nt_context_t *ctx, nt_packet_t *packet)
