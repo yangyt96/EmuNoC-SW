@@ -119,7 +119,23 @@ int nocpe_eject(int rx_num_bd, List_t *hw_buff[])
                 continue;
 
             NocPe_Pkt_t *pkt = (NocPe_Pkt_t *)(&rx_buffer[j]);
-            int pos = list_find_data_range(hw_buff[pkt->src], pkt, 0, sizeof(NocPe_Pkt_t) / 2);
+
+            // int pos = list_find_data_range(hw_buff[pkt->src], pkt, 0, sizeof(NocPe_Pkt_t) / 2);
+            int pos = -1;
+            int npos = 0;
+            for (List_Node_t *node = hw_buff[pkt->src]->head; node != NULL; node = node->next, npos++)
+            {
+                NocPe_PktCyc_t *pkt_cyc = node->data;
+                NocPe_Pkt_t *tmp_pkt = &pkt_cyc->pkt;
+
+                // checking the dst and len is enough, prevent id overflow issue
+                if (pkt->dst == tmp_pkt->dst && pkt->len == tmp_pkt->len)
+                {
+                    pos = npos;
+                    break;
+                }
+            }
+
             if (pos != -1)
             {
                 NocPe_PktCyc_t *pkt_cyc = (NocPe_PktCyc_t *)list_at(hw_buff[pkt->src], pos);
