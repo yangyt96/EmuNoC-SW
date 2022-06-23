@@ -1,5 +1,5 @@
 # EmuNoC Software
-This is the software part of the NoC hybrid emulation prototype - EmuNoC.
+This is the software part of the NoC hybrid emulation prototype - EmuNoC. Currently, it supports all-to-all NoC traffic, random traffic, uniform random traffic, netrace and multicore NoC-interconnect AI traffic workloads. You can add any other traffic that you like.
 
 ## Prerequisite
 Please install Xilinx SDK for the cross compiler.
